@@ -63,19 +63,32 @@ def createNotes(keys):
     return Notes
 
 def recreateMidifromGraphPath(path,keys):
+    file = mido.MidiFile()
     outTrack = mido.MidiTrack()
+    file.tracks.append(outTrack)
     queue = PriorityQueue()
     for p in path:
         queue.put( (p[0],p[1], 1))
 
-
+    last_time=0
     while not queue.empty():
         top = queue.get()
-        outTrack.append('')
+        action = 'note_on' if top[2] == 1 else 'note_off'
+        timeline_time = top[0]
+        note_ind = p[1]
+        if action == 'note_on':
+            queue.put((timeline_time+keys[note_ind].time,p[1],0))
 
+        outTrack.append(mido.Message(action,note=keys[note_ind].note,velocity=64,time=timeline_time-last_time))
+        last_time = timeline_time
+
+    file.save("midi/out.mid")
 
 
 
 notess,timeli = process(sentino.tracks[0])
 print("notes:",notess)
 print("timeli:",timeli)
+
+notess = createNotes(notess)
+recreateMidifromGraphPath(timeli,notess)
