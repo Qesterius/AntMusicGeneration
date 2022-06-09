@@ -2,6 +2,7 @@
 #TODO: MIDI library
 #mido https://mido.readthedocs.io/en/latest/message_types.html
 import mido
+from queue import PriorityQueue
 #TODO: MIDI instruments/samples
 #z teoria muzyki too jakos wspolgra, ale nw czy bedzie warto ogarniac https://pythonlang.dev/repo/rainbow-dreamer-musicpy/
 #TODO: graph of midi events
@@ -29,8 +30,11 @@ def printTrack(track):
             print(msg)
 
 def process(track):
-    diction = {}
+    notes_non_dup = []
+    timeline=[]
+    cur_time=0
     for i,msg in enumerate(track):
+        cur_time+=msg.time
         if msg.type == 'note_on':
             note = msg.note
             time =0
@@ -38,17 +42,33 @@ def process(track):
             while track[j].type != 'note_off' and track[j].note != note:
                 time+= track[j].time
                 j+=1
-            if diction.get((note,time)) is None:
-                diction[(note,time)] = 1
-    return diction.keys()
+
+            index=0
+            if (note,time) in notes_non_dup:
+                index = notes_non_dup.index((note,time))
+
+            else:
+                index = len(notes_non_dup)
+                notes_non_dup.append((note,time))
+            timeline.append((cur_time,index))
+
+    return notes_non_dup,timeline
 from graph import Note
 def createNotes(keys):
     Notes=[]
     for key in keys:
         note,time = key
         Notes.append(Note(time,note))
-        
+
     return Notes
 
+def recreateMidifromGraphPath(path,keys):
+    queue = PriorityQueue()
+    for p in path:
+        queue.put( (p[0],p[1], )
+    queue.put()
 
-process(sentino.tracks[0])
+
+notess,timeli = process(sentino.tracks[0])
+print("notes:",notess)
+print("timeli:",timeli)
