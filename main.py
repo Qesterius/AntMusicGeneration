@@ -43,7 +43,7 @@ def process(track):
             while track[j].type != 'note_off' and track[j].note != note:
                 time+= track[j].time
                 j+=1
-
+            time += track[j].time
             index=0
             if (note,time) in notes_non_dup:
                 index = notes_non_dup.index((note,time))
@@ -66,6 +66,7 @@ def createNotes(keys):
 
 def recreateMidifromGraphPath(path,keys):
     file = mido.MidiFile()
+    file.ticks_per_beat = sentino.ticks_per_beat
     outTrack = mido.MidiTrack()
     file.tracks.append(outTrack)
     queue = PriorityQueue()
@@ -86,7 +87,7 @@ def recreateMidifromGraphPath(path,keys):
         last_time = timeline_time
 
     #printTrack(outTrack)
-    file.ticks_per_beat = sentino.ticks_per_beat
+
     print("ticks", file.ticks_per_beat)
 
     file.save("midi/out.mid")
