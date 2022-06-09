@@ -63,10 +63,17 @@ def createNotes(keys):
     return Notes
 
 def recreateMidifromGraphPath(path,keys):
+    outTrack = mido.MidiTrack()
     queue = PriorityQueue()
     for p in path:
-        queue.put( (p[0],p[1], )
-    queue.put()
+        queue.put( (p[0],p[1], 1))
+
+
+    while not queue.empty():
+        top = queue.get()
+        outTrack.append('')
+
+
 
 
 notess,timeli = process(sentino.tracks[0])
