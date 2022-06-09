@@ -23,8 +23,24 @@ import mido
 #5) puscic mruweczki po grafie, zeby cos naklikaly i pozapisywaly do pliku midi
 #6) odtworzyc plik wynikowy uzywajac playmidi
 
-sentino  = mido.MidiFile('midi/sentino.mid')
-for i, track in enumerate(sentino.tracks):
-    print('Track {}: {}'.format(i, track.name))
-    for msg in track:
-        print(msg)
+sentino = mido.MidiFile('midi/sentino.mid')
+def printTrack(track):
+        for msg in track:
+            print(msg)
+
+def process(track):
+    diction = {}
+    for i,msg in enumerate(track):
+        if msg.type == 'note_on':
+            note = msg.note
+            time =0
+            j=i+1
+            while track[j].type != 'note_off' and track[j].note != note:
+                time+= track[j].time
+                j+=1
+            if diction.get((note,time)) is None:
+                diction[(note,time)] = 1
+
+    print(diction.keys())
+
+process(sentino.tracks[0])
