@@ -1,5 +1,5 @@
 import mido
-from random import randint, random
+from random import randint, random, choices
 
 
 class Note:
@@ -20,23 +20,40 @@ class Note:
 
 class Graph:
 
-    def __init__(self, notes, ants_num, pheromones):
+    def __init__(self, notes, ants_num, pheromones, pheromone_increase, pheromone_decrease):
         self.notes = notes
         self.ants = [randint(min(notes), max(notes) + 1) for _ in range(ants_num)]
         self.pheromones = pheromones
+        self.last_moves = []
+        self.pheromone_increase = pheromone_increase
+        self.pheromone_decrease = pheromone_decrease
 
     # nodes
     # adjencymatrix
     def move_ants(self):
+        n = len(self.notes)
+
         for ant in self.ants:
-            n = len(self.notes)
-            prob = random()
             _sum = 0
+            weights = [0 for _ in range(n)]
+
             for i in range(n):
                 _sum += self.pheromones[ant][i] * 1/abs(self.notes[i].note - self.notes[ant].note)
+
             for i in range(n):
-                if prob < self.pheromones[ant][i]/_sum:
-                    self.ants[ant] = i
+                weights[i] = self.pheromones[ant][i]/_sum
+            move = choices([1 for i in range(n)], weights=weights)
+            self.ants[ant] = move
+            self.last_moves.append((ant, move))
+
+        for move_from, move_to in self.last_moves:
+            self.pheromones[move_from][move_to] += self.pheromone_increase
+
+        for i in range(n):
+            for j in range(n):
+                self.pheromones[i][j] *= self.pheromones[i][j]*(1-self.pheromone_decrease)
+
+
 
     def create_music(self, scale, bpm, metryka):
         # scale to moze byc rownie dobrze tutaj maska po prostu jakie wierzcholki bedziemy uzywac (ostatecznie chcemy, zeby wierzcholkow bylo przynajmniej z jakis 2 utworow o roznych skalach)
