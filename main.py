@@ -25,6 +25,7 @@ from queue import PriorityQueue
 #6) odtworzyc plik wynikowy uzywajac playmidi
 
 sentino = mido.MidiFile('midi/sentino.mid')
+out = mido.MidiFile()
 print("ticks",sentino.ticks_per_beat)
 def printTrack(track):
         for msg in track:
@@ -32,6 +33,7 @@ def printTrack(track):
 
 def process(track):
     notes_non_dup = []
+    velocity_arr=[]
     timeline=[]
     cur_time=0
     for i,msg in enumerate(track):
@@ -40,9 +42,12 @@ def process(track):
             note = msg.note
             time =0
             j=i+1
-            while track[j].type != 'note_off' and track[j].note != note:
+            while track[j].type != 'note_off' or track[j].note != note:
+                #if(note == 68):
+                    #print(track[j].note)
                 time+= track[j].time
                 j+=1
+            #print()
             time += track[j].time
             index=0
             if (note,time) in notes_non_dup:
@@ -51,16 +56,17 @@ def process(track):
             else:
                 index = len(notes_non_dup)
                 notes_non_dup.append((note,time))
+                velocity_arr.append(msg.velocity)
             timeline.append((cur_time,index))
 
-    return notes_non_dup,timeline
+    return notes_non_dup,velocity_arr,timeline
 from graph import Note
 
-def createNotes(keys):
+def createNotes(keys,velocity_arr):
     Notes=[]
-    for key in keys:
+    for i,key in enumerate(keys):
         note,time = key
-        Notes.append(Note(time,note))
+        Notes.append(Note(time,note,velocity_arr[i]))
 
     return Notes
 
@@ -79,24 +85,36 @@ def recreateMidifromGraphPath(path,keys):
         action = 'note_on' if top[2] == 1 else 'note_off'
         timeline_time = top[0]
         note_ind = top[1]
-        print(note_ind)
+        #print(note_ind)
         if action == 'note_on':
             queue.put((timeline_time+keys[note_ind].time,top[1],0))
 
-        outTrack.append(mido.Message(action,note=keys[note_ind].note,velocity=64,time=timeline_time-last_time))
+        outTrack.append(mido.Message(action,note=keys[note_ind].note,velocity=keys[note_ind].velocity,time=timeline_time-last_time))
         last_time = timeline_time
 
     #printTrack(outTrack)
 
     print("ticks", file.ticks_per_beat)
-
+    global out
+    out = file
     file.save("midi/out.mid")
 
 
 
-notess,timeli = process(sentino.tracks[0])
+notess,velocity_arrr,timeli = process(sentino.tracks[0])
 print("notes:",notess)
 print("timeli:",timeli)
 
-notess = createNotes(notess)
+notess = createNotes(notess,velocity_arrr)
 recreateMidifromGraphPath(timeli,notess)
+
+import sys
+original_stdout = sys.stdout # Save a reference to the original standard output
+
+with open('LOG.txt', 'w') as f:
+    sys.stdout = f # Change the standard output to the file we created.
+    printTrack(sentino.tracks[0])
+    print(" ")
+    printTrack(out.tracks[0])
+
+    sys.stdout = original_stdout # Reset the standard output to its original value

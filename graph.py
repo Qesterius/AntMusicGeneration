@@ -6,9 +6,11 @@ class Note:
     # wysokosc dzwieku
     # dlugosc dzwieku nw jak robimy jesazce z taktowaniem -> to takie co jest 4/4 na przyklad
 
-    def __init__(self, time, note):
+    def __init__(self, time, note,velocity):
         self.time = time
         self.note = note
+        self.velocity = velocity
+
 
     def create_message(self):
         msg = mido.Message('note_on', channel=0, note=self.note, velocity=64, time=0)
