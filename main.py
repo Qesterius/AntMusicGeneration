@@ -54,6 +54,7 @@ def process(track):
 
     return notes_non_dup,timeline
 from graph import Note
+
 def createNotes(keys):
     Notes=[]
     for key in keys:

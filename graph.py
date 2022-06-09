@@ -27,12 +27,13 @@ class Graph:
         self.last_moves = []
         self.pheromone_increase = pheromone_increase
         self.pheromone_decrease = pheromone_decrease
+        self.music = []
 
     # nodes
     # adjencymatrix
     def move_ants(self):
         n = len(self.notes)
-
+        last_moves = []
         for ant in self.ants:
             _sum = 0
             weights = [0 for _ in range(n)]
@@ -43,6 +44,8 @@ class Graph:
             for i in range(n):
                 weights[i] = self.pheromones[ant][i]/_sum
             move = choices([1 for i in range(n)], weights=weights)
+            # adding moves
+            self.music.append((self.notes[move].note, self.notes[move].time))
             self.ants[ant] = move
             self.last_moves.append((ant, move))
 
@@ -55,9 +58,11 @@ class Graph:
 
 
 
-    def create_music(self, scale, bpm, metryka):
+    def create_music(self, scale, bpm, metryka, length):
         # scale to moze byc rownie dobrze tutaj maska po prostu jakie wierzcholki bedziemy uzywac (ostatecznie chcemy, zeby wierzcholkow bylo przynajmniej z jakis 2 utworow o roznych skalach)
         # bpm to w sumie wyjebane, bo to kwestia czy wszystko bedzie szybciej czy wolniej, mozna ustawic jako stale nawet
         # metryke mozemy ustalic 4/4 bo jest podstawowwe, ale w sumie trzeba do tego przysiasc https://pl.wikipedia.org/wiki/Takt_(muzyka) / https://pl.wikipedia.org/wiki/Metrum_(muzyka)
 
         il_jedn_metr_na_takt, jednostka_metryczna = metryka  # to oznacza tyle, ze na jeden takt w utworze przypada ilestam cwiercnut/szesnastek itd.
+        for i in range(length):
+            self.move_ants()
