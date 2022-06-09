@@ -39,11 +39,11 @@ class Graph:
             weights = [0 for _ in range(n)]
 
             for i in range(n):
-                _sum += self.pheromones[ant][i] * 1/abs(self.notes[i].note - self.notes[ant].note)
+                _sum += self.pheromones[ant][i] / abs(self.notes[i].note - self.notes[ant].note)
 
             for i in range(n):
-                weights[i] = self.pheromones[ant][i]/_sum
-            move = choices([1 for i in range(n)], weights=weights)
+                weights[i] = self.pheromones[ant][i] / abs(self.notes[i].note - self.notes[ant].note) / _sum
+            move = choices([i for i in range(n)], weights=weights)
             # adding moves
             self.music.append((self.notes[move].note, self.notes[move].time))
             self.ants[ant] = move
@@ -54,9 +54,7 @@ class Graph:
 
         for i in range(n):
             for j in range(n):
-                self.pheromones[i][j] *= self.pheromones[i][j]*(1-self.pheromone_decrease)
-
-
+                self.pheromones[i][j] *= self.pheromones[i][j] * (1 - self.pheromone_decrease)
 
     def create_music(self, scale, bpm, metryka, length):
         # scale to moze byc rownie dobrze tutaj maska po prostu jakie wierzcholki bedziemy uzywac (ostatecznie chcemy, zeby wierzcholkow bylo przynajmniej z jakis 2 utworow o roznych skalach)
@@ -66,3 +64,4 @@ class Graph:
         il_jedn_metr_na_takt, jednostka_metryczna = metryka  # to oznacza tyle, ze na jeden takt w utworze przypada ilestam cwiercnut/szesnastek itd.
         for i in range(length):
             self.move_ants()
+
