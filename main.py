@@ -40,7 +40,15 @@ def process(track):
                 j+=1
             if diction.get((note,time)) is None:
                 diction[(note,time)] = 1
+    return diction.keys()
+from graph import Note
+def createNotes(keys):
+    Notes=[]
+    for key in keys:
+        note,time = key
+        Notes.append(Note(time,note))
+        
+    return Notes
 
-    print(diction.keys())
 
 process(sentino.tracks[0])

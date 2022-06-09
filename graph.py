@@ -6,8 +6,7 @@ class Note:
     # wysokosc dzwieku
     # dlugosc dzwieku nw jak robimy jesazce z taktowaniem -> to takie co jest 4/4 na przyklad
 
-    def __init__(self, frequency, time, note):
-        self.frequency = frequency
+    def __init__(self, time, note):
         self.time = time
         self.note = note
 
