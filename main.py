@@ -22,3 +22,9 @@ import mido
 
 #5) puscic mruweczki po grafie, zeby cos naklikaly i pozapisywaly do pliku midi
 #6) odtworzyc plik wynikowy uzywajac playmidi
+
+sentino  = mido.MidiFile('midi/sentino.mid')
+for i, track in enumerate(sentino.tracks):
+    print('Track {}: {}'.format(i, track.name))
+    for msg in track:
+        print(msg)
