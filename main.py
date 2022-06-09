@@ -76,13 +76,15 @@ def recreateMidifromGraphPath(path,keys):
         top = queue.get()
         action = 'note_on' if top[2] == 1 else 'note_off'
         timeline_time = top[0]
-        note_ind = p[1]
+        note_ind = top[1]
+        print(note_ind)
         if action == 'note_on':
-            queue.put((timeline_time+keys[note_ind].time,p[1],0))
+            queue.put((timeline_time+keys[note_ind].time,top[1],0))
 
         outTrack.append(mido.Message(action,note=keys[note_ind].note,velocity=64,time=timeline_time-last_time))
         last_time = timeline_time
 
+    #printTrack(outTrack)
     file.save("midi/out.mid")
 
 
