@@ -25,6 +25,7 @@ from queue import PriorityQueue
 #6) odtworzyc plik wynikowy uzywajac playmidi
 
 sentino = mido.MidiFile('midi/sentino.mid')
+print("ticks",sentino.ticks_per_beat)
 def printTrack(track):
         for msg in track:
             print(msg)
@@ -85,6 +86,9 @@ def recreateMidifromGraphPath(path,keys):
         last_time = timeline_time
 
     #printTrack(outTrack)
+    file.ticks_per_beat = sentino.ticks_per_beat
+    print("ticks", file.ticks_per_beat)
+
     file.save("midi/out.mid")
 
 
