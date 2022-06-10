@@ -6,11 +6,11 @@ class Note:
     # wysokosc dzwieku
     # dlugosc dzwieku nw jak robimy jesazce z taktowaniem -> to takie co jest 4/4 na przyklad
 
-    def __init__(self, time, note,velocity):
+    def __init__(self, time, note, velocity, idx):
+        self.idx = idx
         self.time = time
         self.note = note
         self.velocity = velocity
-
 
     def create_message(self):
         msg = mido.Message('note_on', channel=0, note=self.note, velocity=64, time=0)
@@ -22,33 +22,49 @@ class Note:
 
 class Graph:
 
-    def __init__(self, notes, ants_num, pheromones, pheromone_increase, pheromone_decrease):
-        self.notes = notes
-        self.ants = [randint(min(notes), max(notes) + 1) for _ in range(ants_num)]
-        self.pheromones = pheromones
+    def initialize_pheromones(self, route):
+        route = list(map(lambda x: x[1], route))
+        # print(max(route))
+        time = 10
+        pheromones = [[3 for _ in range(max(route) + 1)] for _ in range(max(route) + 1)]
+        ants = []
+        for idx, move in enumerate(route):
+            if idx != 0:
+                pheromones[route[idx - 1]][move] += self.pheromone_increase
+        return pheromones
+
+    def __init__(self, notes, ants_playing, ants, pheromone_increase, pheromone_decrease, ants_starting_route):
+        self.notes = {note.note: note for note in notes}
+        self.ants_playing = ants_playing
+        self.ants = ants
         self.last_moves = []
         self.pheromone_increase = pheromone_increase
         self.pheromone_decrease = pheromone_decrease
         self.music = []
 
+        self.pheromones = self.initialize_pheromones(ants_starting_route)
+        # print(len(self.pheromones))
+
     # nodes
     # adjencymatrix
-    def move_ants(self):
+
+    def move_ants(self, itr, ants, playing):
         n = len(self.notes)
         last_moves = []
-        for ant in self.ants:
+
+        for idx, ant in enumerate(ants):
             _sum = 0
-            weights = [0 for _ in range(n)]
+            weights = [0 for _ in range(max(self.notes.keys()) + 1)]
+            for key in self.notes:
+                _sum += self.pheromones[ant][key] / (abs(key - ant) + 1)
 
-            for i in range(n):
-                _sum += self.pheromones[ant][i] / abs(self.notes[i].note - self.notes[ant].note)
-
-            for i in range(n):
-                weights[i] = self.pheromones[ant][i] / abs(self.notes[i].note - self.notes[ant].note) / _sum
-            move = choices([i for i in range(n)], weights=weights)
+            for key in self.notes:
+                weights[key] = self.pheromones[ant][key] / (abs(key - ant) + 1) / _sum
+            move = choices([i for i in range(max(self.notes.keys()) + 1)], weights=weights)
+            move = move[0]
             # adding moves
-            self.music.append((self.notes[move].note, self.notes[move].time))
-            self.ants[ant] = move
+            if playing: self.music.append((self.notes[move].time * itr, self.notes[move].idx))
+            self.ants[idx] = move
             self.last_moves.append((ant, move))
 
         for move_from, move_to in self.last_moves:
@@ -65,5 +81,6 @@ class Graph:
 
         il_jedn_metr_na_takt, jednostka_metryczna = metryka  # to oznacza tyle, ze na jeden takt w utworze przypada ilestam cwiercnut/szesnastek itd.
         for i in range(length):
-            self.move_ants()
-
+            self.move_ants(i, self.ants_playing, playing=True)
+            self.move_ants(i, self.ants, playing=False)
+        return self.music
