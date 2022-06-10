@@ -102,14 +102,14 @@ def recreateMidifromGraphPath(path,keys):
 
 
 notess,velocity_arrr,timeli = process(sentino.tracks[0])
-print("notes:",notess)
+#print("notes:",notess)
 print("timeli:",timeli)
 
 notess = createNotes(notess,velocity_arrr)
 recreateMidifromGraphPath(timeli,notess)
 
+"""
 import sys
-original_stdout = sys.stdout # Save a reference to the original standard output
 
 with open('LOG.txt', 'w') as f:
     sys.stdout = f # Change the standard output to the file we created.
@@ -118,3 +118,4 @@ with open('LOG.txt', 'w') as f:
     printTrack(out.tracks[0])
 
     sys.stdout = original_stdout # Reset the standard output to its original value
+"""
