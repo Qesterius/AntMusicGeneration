@@ -73,6 +73,7 @@ def process(track):
 
 from graph import Note
 
+
 def create_notes_without_time(keys, velocity_arr):
     Notes = []
     keys = map(lambda x: x[0], keys)
@@ -80,7 +81,7 @@ def create_notes_without_time(keys, velocity_arr):
     # print(keys)
     for i, key in enumerate(keys):
         note = key
-        Notes.append(Note(10, note, velocity_arr[i], i))
+        Notes.append(Note(15, note, velocity_arr[i], i))
     return Notes
 
 
@@ -137,7 +138,8 @@ print(ants_playing)
 
 notess = createNotes(notess, velocity_arrr)
 
-graph = Graph(notes=not_without_time, ants_playing=ants_playing, ants=ants, pheromone_increase=1, pheromone_decrease=0.01,
+graph = Graph(notes=not_without_time, ants_playing=ants_playing, ants=ants, pheromone_increase=1,
+              pheromone_decrease=0.01,
               ants_starting_route=route)
 music = graph.create_music(scale=10, bpm=190, metryka=(1, 1), length=1000)
 
