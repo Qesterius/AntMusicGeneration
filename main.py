@@ -138,8 +138,8 @@ print(ants_playing)
 
 notess = createNotes(notess, velocity_arrr)
 
-graph = Graph(notes=not_without_time, ants_playing=ants_playing, ants=ants, pheromone_increase=1,
-              pheromone_decrease=0.01,
+graph = Graph(notes=not_without_time, ants_playing=ants_playing, ants=ants, pheromone_increase=0.5,
+              pheromone_decrease=0.1,
               ants_starting_route=route)
 music = graph.create_music(scale=10, bpm=190, metryka=(1, 1), length=1000)
 
