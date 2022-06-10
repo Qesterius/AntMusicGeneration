@@ -22,7 +22,10 @@ class Note:
 
 class Graph:
 
-
+    def initialize_pheromones(self, route):
+        pheromones = [[0 for _ in range(len(self.notes))] for _ in range(len(self.notes))]
+        for move in enumerate(route):
+            pass
 
     def __init__(self, notes, ants_num, pheromone_increase, pheromone_decrease, ants_starting_route):
         self.notes = notes
