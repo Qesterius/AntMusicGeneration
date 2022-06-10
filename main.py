@@ -73,16 +73,6 @@ def process(track):
 
 from graph import Note
 
-
-def createNotes(keys, velocity_arr):
-    Notes = []
-    for i, key in enumerate(keys):
-        note, time = key
-        Notes.append(Note(time, note, velocity_arr[i]))
-
-    return Notes
-
-
 def create_notes_without_time(keys, velocity_arr):
     Notes = []
     keys = map(lambda x: x[0], keys)
@@ -90,7 +80,15 @@ def create_notes_without_time(keys, velocity_arr):
     # print(keys)
     for i, key in enumerate(keys):
         note = key
-        Notes.append(Note(4, note, velocity_arr[i]))
+        Notes.append(Note(10, note, velocity_arr[i], i))
+    return Notes
+
+
+def createNotes(keys, velocity_arr):
+    Notes = []
+    for i, key in enumerate(keys):
+        note, time = key
+        Notes.append(Note(time, note, velocity_arr[i], i))
     return Notes
 
 
@@ -130,18 +128,23 @@ notess, velocity_arrr, timeli, route = process(sentino.tracks[0])
 # print("timeli:", timeli)
 # print("route", route)
 not_without_time = create_notes_without_time(notess, velocity_arrr)
-ants_num = 5
+ants_num = 10
+ants_num_playing = 2
 ants = random.choices(list(map(lambda x: x[0], notess)), k=ants_num)
+ants_playing = random.choices(list(map(lambda x: x[0], notess)), k=ants_num_playing)
 print(ants)
+print(ants_playing)
 
 notess = createNotes(notess, velocity_arrr)
 
-graph = Graph(notes=not_without_time, ants=ants, pheromone_increase=1, pheromone_decrease=0.01,
+graph = Graph(notes=not_without_time, ants_playing=ants_playing, ants=ants, pheromone_increase=1, pheromone_decrease=0.01,
               ants_starting_route=route)
 music = graph.create_music(scale=10, bpm=190, metryka=(1, 1), length=1000)
-print(music)
 
-recreateMidifromGraphPath(timeli, notess)
+print(music)
+print(len(music))
+
+recreateMidifromGraphPath(music, not_without_time)
 
 import sys
 
